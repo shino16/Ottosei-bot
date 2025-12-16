@@ -1,7 +1,8 @@
 import discord
 import os
 
-TOKEN = os.getenv('DISCORD_TOKEN')
+with open('discord_token') as f:
+    TOKEN = f.readline()
 CHANNELID = int(os.getenv('DISCORD_CHANNEL_ID'))
 
 intents = discord.Intents.default()
