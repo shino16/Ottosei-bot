@@ -127,6 +127,8 @@ async def list_responses(interaction: discord.Interaction):
     guild=discord.Object(id=GUILD_ID)
 )
 async def export_responses(interaction: discord.Interaction):
+    await interaction.response.defer(ephemeral=True)
+
     json_text = json.dumps(
         responses,
         ensure_ascii=False,
@@ -138,11 +140,11 @@ async def export_responses(interaction: discord.Interaction):
         filename="responses.json"
     )
 
-    await interaction.response.send_message(
-        content="responses.json has been exported.",
-        file=file,
-        ephemeral=True
+    await interaction.followup.send(
+        content="反応をエクスポートしました",
+        file=file
     )
+    print(f"反応をエクスポートしました: {responses}")
 
 
 @tree.command(
@@ -154,8 +156,10 @@ async def import_responses(
     interaction: discord.Interaction,
     file: discord.Attachment
 ):
+    await interaction.response.defer(ephemeral=True)
+
     if not file.filename.endswith(".json"):
-        await interaction.response.send_message(
+        await interaction.followup.send(
             "JSONファイルをアップロードしてください",
             ephemeral=True
         )
@@ -169,7 +173,7 @@ async def import_responses(
             raise ValueError("JSON must be an object")
 
     except Exception as e:
-        await interaction.response.send_message(
+        await interaction.followup.send(
             f"無効なJSONファイルです: {e}",
             ephemeral=True
         )
@@ -180,6 +184,10 @@ async def import_responses(
 
     save_responses(data)
 
+    await interaction.followup.send(
+        f"{len(data)} 件の反応をインポートしました"
+    )
+    print(f"反応をインポートしました: {data}")
 
 @client.event
 async def on_ready():
