@@ -27,7 +27,7 @@ protected_triggers = ["しの"]
 async def ottosei(interaction: discord.Interaction):
     text = text_ottosei
     await interaction.response.send_message(text)
-    print(f"オットセイしました: {text}")
+    print(f"オットセイしました: {text}", flush=True)
 
 
 @tree.command(
@@ -54,6 +54,7 @@ async def add_response(interaction: discord.Interaction, trigger: str, reply: st
         f"追加しました: `{trigger}` → `{reply}`",
         ephemeral=True
     )
+    print(f"反応を追加しました: {trigger} -> {reply}", flush=True)
 
 
 @tree.command(
@@ -80,6 +81,7 @@ async def del_response(interaction: discord.Interaction, trigger: str):
             "そのトリガーは存在しません",
             ephemeral=True
         )
+    print(f"反応を削除しました: {trigger}", flush=True)
 
 
 @tree.command(
@@ -106,6 +108,7 @@ async def edit_response(interaction: discord.Interaction, trigger: str, reply: s
         f"編集しました: `{trigger}` → `{reply}`",
         ephemeral=True
     )
+    print(f"反応を編集しました: {trigger} -> {reply}", flush=True)
 
 @tree.command(
     name="list_responses",
@@ -118,6 +121,7 @@ async def list_responses(interaction: discord.Interaction):
         f"反応一覧:\n{response_list}",
         ephemeral=True
     )
+    print(f"反応一覧を表示しました: {response_list}", flush=True)
 
 
 
@@ -144,7 +148,7 @@ async def export_responses(interaction: discord.Interaction):
         content="反応をエクスポートしました",
         file=file
     )
-    print(f"反応をエクスポートしました: {responses}")
+    print(f"反応をエクスポートしました: {responses}", flush=True)
 
 
 @tree.command(
@@ -189,13 +193,13 @@ async def import_responses(
     await interaction.followup.send(
         f"{len(data)} 件の反応をインポートしました"
     )
-    print(f"反応をインポートしました: {data}")
+    print(f"反応をインポートしました: {data}", flush=True)
 
 @client.event
 async def on_ready():
     guild = discord.Object(id=GUILD_ID)
     await tree.sync(guild=guild)
-    print(f"ログインしました: {client.user}")
+    print(f"ログインしました: {client.user}", flush=True)
 
 
 @client.event
@@ -218,6 +222,6 @@ async def on_message(message):
     hits.sort(key=lambda x: x[0])
     for _, trigger, reply in hits:
         await message.channel.send(reply)
-        print(f"反応しました: {trigger} -> {reply}")
+        print(f"反応しました: {trigger} -> {reply}", flush=True)
 
 client.run(TOKEN)
