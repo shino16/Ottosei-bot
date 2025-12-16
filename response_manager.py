@@ -12,7 +12,7 @@ def load_responses():
         return json.load(f)
 
 def load_default_responses():
-    with open(BASE_DIR / "default_responses.json", "r", encoding="utf-8") as f:
+    with open("data/default_responses.json", "r", encoding="utf-8") as f:
         return json.load(f)
 
 def save_responses(data):
