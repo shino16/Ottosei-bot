@@ -183,7 +183,8 @@ async def import_responses(
         data[trigger] = responses[trigger]
 
     save_responses(data)
-    responses = load_responses()
+    responses.clear()
+    responses.update(data)
 
     await interaction.followup.send(
         f"{len(data)} 件の反応をインポートしました"
