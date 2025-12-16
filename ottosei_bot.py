@@ -183,6 +183,7 @@ async def import_responses(
         data[trigger] = responses[trigger]
 
     save_responses(data)
+    responses = load_responses()
 
     await interaction.followup.send(
         f"{len(data)} 件の反応をインポートしました"
@@ -202,9 +203,16 @@ async def on_message(message):
         return
 
     hits = []
+    content = message.content
     for trigger, reply in responses.items():
-        for match in re.finditer(trigger, message.content):
-            hits.append((match.start(), trigger, reply))
+        pattern = rf"(?=({re.escape(trigger)}))"
+
+        for match in re.finditer(pattern, content):
+            hits.append((
+                match.start(1),
+                trigger,
+                reply
+            ))
 
     hits.sort(key=lambda x: x[0])
     for _, trigger, reply in hits:
