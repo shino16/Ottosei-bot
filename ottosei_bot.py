@@ -1,4 +1,5 @@
 import discord
+import re
 
 with open('discord_secrets') as f:
     TOKEN = f.readline()
@@ -32,15 +33,23 @@ async def on_message(message):
     if message.author.bot:
         return
 
-    dict = {
+    responses = {
         "しの": text_ottosei,
-        "ぬるぽ": "ｶﾞｯ",
-        "オットセイ": text_ottosei,
+        "ぬるぽ": "ｶﾞｯ!",
+        "膃肭臍": "膃肭臍の話した？",
+        "おっとせい": "おっとせいの話した？",
+        "オットセイ": "オットセイの話した？",
     }
 
-    if message.content and message.content in dict:
-        text = dict[message.content]
-        await message.channel.send(text)
-        print(f"反応しました: {text}")
+    hits = []
+
+    for pattern, reply in responses.items():
+        for match in re.finditer(pattern, message.content):
+            hits.append((match.start(), reply))
+
+    hits.sort(key=lambda x: x[0])
+
+    for _, reply in hits:
+        await message.channel.send(reply)
 
 client.run(TOKEN)
