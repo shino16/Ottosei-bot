@@ -2,7 +2,6 @@ import discord
 
 with open('discord_secrets') as f:
     TOKEN = f.readline()
-    TOKEN = f.readline()
     GUILD_ID = int(f.readline())
 
 intents = discord.Intents.default()
