@@ -1,6 +1,8 @@
 import discord
 import re
-from responce_manager import load_responses, save_responses
+from response_manager import load_responses, save_responses
+import json
+import io
 
 
 with open('discord_secrets') as f:
@@ -116,6 +118,67 @@ async def list_responses(interaction: discord.Interaction):
         f"反応一覧:\n{response_list}",
         ephemeral=True
     )
+
+
+
+@tree.command(
+    name="export_responses",
+    description="反応をJSONファイルとしてエクスポート",
+    guild=discord.Object(id=GUILD_ID)
+)
+async def export_responses(interaction: discord.Interaction):
+    json_text = json.dumps(
+        responses,
+        ensure_ascii=False,
+        indent=2
+    )
+
+    file = discord.File(
+        fp=io.StringIO(json_text),
+        filename="responses.json"
+    )
+
+    await interaction.response.send_message(
+        content="responses.json has been exported.",
+        file=file,
+        ephemeral=True
+    )
+
+
+@tree.command(
+    name="import_responses",
+    description="JSONファイルから反応をインポート",
+    guild=discord.Object(id=GUILD_ID)
+)
+async def import_responses(
+    interaction: discord.Interaction,
+    file: discord.Attachment
+):
+    if not file.filename.endswith(".json"):
+        await interaction.response.send_message(
+            "JSONファイルをアップロードしてください",
+            ephemeral=True
+        )
+        return
+
+    try:
+        raw = await file.read()
+        data = json.loads(raw)
+
+        if not isinstance(data, dict):
+            raise ValueError("JSON must be an object")
+
+    except Exception as e:
+        await interaction.response.send_message(
+            f"無効なJSONファイルです: {e}",
+            ephemeral=True
+        )
+        return
+
+    for trigger in protected_triggers:
+        data[trigger] = responses[trigger]
+
+    save_responses(data)
 
 
 @client.event
